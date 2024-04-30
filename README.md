@@ -10,6 +10,11 @@ om een *cache* te voorzien. De functies hiervoor staan in het bestand thuis_http
 
 ## Versies
 
+### Versie 0.2
+Functie get_url() uitgebreid met boolean optie *download*:
+- als download False is wordt het bestand nooit gedownload (IndexError wanneer het nog niet aanwezig is in de cache)
+- als download True is wordt er een connectie gemaakt met de Thuis website om te kijken of het bestand gedownload moet worden
+
 ### Versie 0.1
 Het bestand thuis_http_utils.py bevat de volgende functies om een bestand te downloaden van de Fandom website van Thuis: 
 - get_url(url: str) -> str : download een bestand als het nog niet in de cache zit of nieuw is en geeft de inhoud van het bestand in de cache terug
