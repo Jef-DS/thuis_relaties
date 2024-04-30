@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo
 
 from thuis_typing import CacheInfoType, DownloadType
 
-CACHE_DIR_NAME = '.filecachedir2'
+CACHE_DIR_NAME = '.filecachedir'
 CACHE_DIR_PATH = os.path.join(os.getcwd(), CACHE_DIR_NAME)
 INDEX_FILE_NAME = "index.csv"
 INDEX_FILE_HEADERS = list(CacheInfoType.__annotations__.keys()) # de velden van CacheInfoTYpe zijn gelijk aan de veldnamen van index.csv
@@ -178,7 +178,7 @@ def _init() -> str:
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     url = 'https://nergensbeterdanthuis.fandom.com/nl/wiki/Relaties'
-    content = get_url(url)
-    print(content)    
+    content = get_url(url, True)
+        
 
 
