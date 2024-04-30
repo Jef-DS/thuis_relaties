@@ -29,11 +29,21 @@ def get_url(url: str, download=False) -> str:
     ----------
     url: str
          het bestand dat moet worden gedownload van de website als het recenter is, of uit de cache moet worden gehaald wanneer het niet recenter is
+    download: boolean, default False
+         False => neem nooit contact op met de thuis website (bestand moet aanwezig zijn in de cache)
+         True => neem contact op met de thuis website om te controleren of het bestand gewijzigd is (en download eventueel)
+         
 
     Returns
     -------
     str
-         de inhoud van het bestand     
+         de inhoud van het bestand
+
+    Raises
+    ------
+    IndexError
+         Wanneer er en fout zit in de cache of een bestand niet wordt teruggevonden in de cache     
+
     """
     logger.debug(f"In get_url om {url} te met download {download}")
     fileinfo = _get_fileinfo(url)
