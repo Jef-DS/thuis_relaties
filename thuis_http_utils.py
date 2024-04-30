@@ -1,6 +1,6 @@
 import logging
 import os
-from csv import DictWriter
+from csv import DictWriter, DictReader
 from typing import   Optional
 
 from thuis_typing import CacheInfoType
@@ -38,6 +38,11 @@ def get_url(url: str) -> str:
 
 def _get_fileinfo(url: str) -> Optional[CacheInfoType]:
     index_file = _init()
+    with open(index_file, mode='r', newline='', encoding='utf-8') as f:
+        reader = DictReader(f, delimiter=";")
+        for regel in reader:
+            if regel['url'] == url:
+                return regel
     return None
 
 def _init() -> str:
@@ -56,7 +61,7 @@ def _init() -> str:
     
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
-    index_file = _init()
-    print(index_file)
+    resultaat = _get_fileinfo('dummy')
+    print(resultaat)
 
 
