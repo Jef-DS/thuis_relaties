@@ -22,7 +22,7 @@ HTTP_NOT_MODIFIED = 304
 
 logger = logging.getLogger(__name__)
 
-def get_url(url: str) -> str:
+def get_url(url: str, download=False) -> str:
     """Geef de inhoud van een bestand op basis van de Thuis-url
     
     Parameters
@@ -35,18 +35,22 @@ def get_url(url: str) -> str:
     str
          de inhoud van het bestand     
     """
-    logger.debug(f"In get_url om {url} te downloaden")
+    logger.debug(f"In get_url om {url} te met download {download}")
     fileinfo = _get_fileinfo(url)
     refdatum = None
     if fileinfo is not None:
         logger.debug(f"Fileinfo {fileinfo} gevonden")
         refdatum = fileinfo['laatste_wijziging']
-    download_data = _download_url(url, refdatum=refdatum)
-    if download_data is not None:
-        if fileinfo is not None:
-            _update_cache(download_data, fileinfo)
-        else:
-            fileinfo = _add_to_cache(url, download_data)
+    elif not download:
+        logger.error(f"url {url} niet in cache en mag niet downloaden")
+        raise IndexError(f"url {url} niet in cache en mag niet downloaden")
+    if download:
+        download_data = _download_url(url, refdatum=refdatum)
+        if download_data is not None:
+            if fileinfo is not None:
+                _update_cache(download_data, fileinfo)
+            else:
+                fileinfo = _add_to_cache(url, download_data)
     html_bestand = os.path.join(CACHE_DIR_NAME, fileinfo['bestandsnaam'])
     with open(html_bestand, mode='r', encoding='utf-8') as f:
         content = f.read()
@@ -165,6 +169,6 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     url = 'https://nergensbeterdanthuis.fandom.com/nl/wiki/Relaties'
     content = get_url(url)
-    
+    print(content)    
 
 
