@@ -61,7 +61,7 @@ def get_url(url: str, download=False) -> str:
                 _update_cache(download_data, fileinfo)
             else:
                 fileinfo = _add_to_cache(url, download_data)
-    html_bestand = os.path.join(CACHE_DIR_NAME, fileinfo['bestandsnaam'])
+    html_bestand = os.path.join(CACHE_DIR_PATH, fileinfo['bestandsnaam'])
     with open(html_bestand, mode='r', encoding='utf-8') as f:
         content = f.read()
     return content
