@@ -10,6 +10,11 @@ om een *cache* te voorzien. De functies hiervoor staan in het bestand thuis_http
 
 ## Versies
 
+### Versie 0.3
+Het bestand thuis_html_utils.py bevat een functie _lees\_relaties_ om de relaties te lezen:
+- Er is slechts 1 argument: de tekst van de HTML pagina met de relaties
+- De functie geeft een list terug met {seizoennr, naam_persoon_1, naam_persoon_2}
+
 ### Versie 0.2
 Functie get_url() uitgebreid met boolean optie *download*:
 - als download False is wordt het bestand nooit gedownload (IndexError wanneer het nog niet aanwezig is in de cache)

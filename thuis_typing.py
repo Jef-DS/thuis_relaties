@@ -10,3 +10,8 @@ class CacheInfoType(TypedDict):
     bestandsnaam: str
     laatste_wijziging: str
     redirect_url: str
+
+class RelatiePersoonData(TypedDict):
+    seizoen: int
+    persoon_1: str
+    persoon_2: str
