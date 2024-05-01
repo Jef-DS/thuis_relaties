@@ -11,9 +11,12 @@ om een *cache* te voorzien. De functies hiervoor staan in het bestand thuis_http
 ## Versies
 
 ### Versie 0.3
-Het bestand thuis_html_utils.py bevat een functie _lees\_relaties_ om de relaties te lezen:
-- Er is slechts 1 argument: de tekst van de HTML pagina met de relaties
-- De functie geeft een list terug met {seizoennr, naam_persoon_1, naam_persoon_2}
+Het bestand thuis_html_utils.py bevat een functie _extract\_relaties_ om de relaties te lezen en te bewaren in een bestand
+- Er zijn 2 argumenten: de naam van het csv-bestand en de tekst van de HTML pagina met de relaties
+- De functie geeft niets terug
+Er zijn twee private functies aanwezig:
+- \_lees\_relaties(html:str) : leest de relaties in de HTML-tekst en geeft een lijst met relatie data terug (seizoennr, naam_persoon1, naam_persoon2)
+-  \_lees\_seizoen\_relatie(tag, seizoennr): leest de relaties in een seizoenstag en geeft een lijst relatie data terug (seizoennr, naam_persoon1, naam_persoon2)
 
 ### Versie 0.2
 Functie get_url() uitgebreid met boolean optie *download*:

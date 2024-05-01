@@ -1,12 +1,22 @@
 import re
 import logging
 from bs4 import BeautifulSoup, Tag
+from csv import DictWriter
 
 from thuis_typing import RelatiePersoonData
 
+RELATIE_HEADERS = list(RelatiePersoonData.__annotations__.keys())
+
 logger = logging.getLogger(__name__)
 
-def lees_relaties(html:str) -> list[RelatiePersoonData]:
+def extract_relaties(bestandsnaam: str, html:str) -> None:
+    relaties = _lees_relaties(html)
+    with open(bestandsnaam, mode='w', newline='', encoding='utf-8') as f:
+        writer = DictWriter(f, delimiter=';', fieldnames=RELATIE_HEADERS)
+        writer.writeheader()
+        writer.writerows(relaties)
+
+def _lees_relaties(html:str) -> list[RelatiePersoonData]:
     """Leest de relaties van de HTML-tekst van de Relaties-pagina van de Thuis website
 
     Parameters
@@ -48,5 +58,5 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     url = "https://nergensbeterdanthuis.fandom.com/nl/wiki/Relaties"
     content = get_url(url)
-    resultaat = lees_relaties(content)
-    print(resultaat[:10])
+    bestandsnaam = "relaties_namen.csv"
+    extract_relaties(bestandsnaam, content)
