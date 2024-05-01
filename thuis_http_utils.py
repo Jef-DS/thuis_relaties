@@ -33,7 +33,6 @@ def get_url(url: str, download=False) -> str:
          False => neem nooit contact op met de thuis website (bestand moet aanwezig zijn in de cache)
          True => neem contact op met de thuis website om te controleren of het bestand gewijzigd is (en download eventueel)
          
-
     Returns
     -------
     str
@@ -45,12 +44,13 @@ def get_url(url: str, download=False) -> str:
          Wanneer er en fout zit in de cache of een bestand niet wordt teruggevonden in de cache     
 
     """
-    logger.debug(f"In get_url om {url} te met download {download}")
+    logger.debug(f"In get_url om {url} met download {download}")
     fileinfo = _get_fileinfo(url)
     refdatum = None
     if fileinfo is not None:
         logger.debug(f"Fileinfo {fileinfo} gevonden")
         refdatum = fileinfo['laatste_wijziging']
+        url = fileinfo['redirect_url']
     elif not download:
         logger.error(f"url {url} niet in cache en mag niet downloaden")
         raise IndexError(f"url {url} niet in cache en mag niet downloaden")
@@ -90,10 +90,7 @@ def _add_to_cache(url:str, download_data: DownloadType) -> CacheInfoType:
         f.write(download_data['content'])
     data.append(fileinfo)
     logger.debug(f"Index bewaren met {fileinfo}")
-    with open(index_file, mode='w', newline='', encoding='utf-8') as f:
-        writer = DictWriter(f, delimiter=';', fieldnames=INDEX_FILE_HEADERS)
-        writer.writeheader()
-        writer.writerows(data)
+    _write_index(data)
     return fileinfo
     
 def _update_cache(download_data: DownloadType, fileinfo:CacheInfoType) -> None:
@@ -103,11 +100,7 @@ def _update_cache(download_data: DownloadType, fileinfo:CacheInfoType) -> None:
     url = fileinfo['url']
     laatste_wijziging = download_data['laatste_wijziging']
     bestandsnaam = os.path.join(cachedir, fileinfo['bestandsnaam'])
-    with open (index_file, mode='r', newline='', encoding='utf-8') as f:
-        reader = DictReader(f, delimiter=";")
-        data = []
-        for rij in reader:
-            data.append(rij)
+    data = _read_index()
     logger.debug(f'{len(data)} indexrecords gelezen')
     gevonden_records = [ rij for rij in data if rij['url'] == url]
     aantal_records = len(gevonden_records)
@@ -116,10 +109,7 @@ def _update_cache(download_data: DownloadType, fileinfo:CacheInfoType) -> None:
         gevonden_records[0]['laatste_wijziging'] = laatste_wijziging
         with open(bestandsnaam, mode='wb') as f:
             f.write(download_data['content'])
-        with open(index_file, mode='w', newline='', encoding='utf-8') as f:
-            writer = DictWriter(f, delimiter=';', fieldnames=INDEX_FILE_HEADERS)
-            writer.writeheader()
-            writer.writerows(data)
+        _write_index(data)
     else:
         logger.error(f'{aantal_records} gevonden bij _update_cache voor url {url}')
         raise IndexError(f'{aantal_records} gevonden bij _update_cache voor url {url}')
@@ -153,13 +143,27 @@ def _download_url(url: str, refdatum:Optional[str]=None) -> Optional[DownloadTyp
         raise(http_err)
     
 def _get_fileinfo(url: str) -> Optional[CacheInfoType]:
-    index_file = _init()
-    with open(index_file, mode='r', newline='', encoding='utf-8') as f:
-        reader = DictReader(f, delimiter=";")
-        for regel in reader:
-            if regel['url'] == url:
-                return regel
+    data = _read_index()
+    for regel in data:
+        if regel['url'] == url:
+            return regel
     return None
+
+def _write_index(data:list[CacheInfoType]) -> None:
+    index_file = _init()
+    with open(index_file, mode='w', newline='', encoding='utf-8') as f:
+        writer = DictWriter(f, delimiter=';', fieldnames=INDEX_FILE_HEADERS)
+        writer.writeheader()
+        writer.writerows(data)
+
+def _read_index() -> list[CacheInfoType]:
+    index_file = _init()
+    with open (index_file, mode='r', newline='', encoding='utf-8') as f:
+        reader = DictReader(f, delimiter=";")
+        data = []
+        for rij in reader:
+            data.append(rij)
+    return data
 
 def _init() -> str:
     is_exist_dir = os.path.isdir(CACHE_DIR_PATH)
@@ -177,8 +181,9 @@ def _init() -> str:
     
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
-    url = 'https://nergensbeterdanthuis.fandom.com/nl/wiki/Relaties'
-    content = get_url(url, True)
+    url = 'https://nergensbeterdanthuis.fandom.com/nl/wiki/C%C3%A9dric'
+    content = get_url(url)
+
         
 
 
