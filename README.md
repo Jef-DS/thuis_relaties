@@ -10,10 +10,14 @@ om een *cache* te voorzien. De functies hiervoor staan in het bestand thuis_http
 
 ## Versies
 
+### Versie 0.4
+Een alternatief om de HTML-bestanden te lezen met lxml (en niet met BeautifulSoup) toegevoegd in thuis_html_lxml_utils.py. Het bestand bevat dezelfde functies als thuis_html_utls.py. 
+
 ### Versie 0.3
 Het bestand thuis_html_utils.py bevat een functie _extract\_relaties_ om de relaties te lezen en te bewaren in een bestand
 - Er zijn 2 argumenten: de naam van het csv-bestand en de tekst van de HTML pagina met de relaties
 - De functie geeft niets terug
+
 Er zijn twee private functies aanwezig:
 - \_lees\_relaties(html:str) : leest de relaties in de HTML-tekst en geeft een lijst met relatie data terug (seizoennr, naam_persoon1, naam_persoon2)
 -  \_lees\_seizoen\_relatie(tag, seizoennr): leest de relaties in een seizoenstag en geeft een lijst relatie data terug (seizoennr, naam_persoon1, naam_persoon2)
