@@ -57,14 +57,25 @@ def _lees_personage_details(html:str) -> PersonageData:
     seizoenen = []
     detail_data = soep.find('table', class_='userbox')
     td_tags = detail_data.find_all('td')
-    a_tags = td_tags[1].find_all('a')    #td_tags[0] bevat het label 'seizoenen'
-    for a_tag in a_tags:
-        seizoen = int(a_tag.string)
-        seizoenen.append(seizoen)
+    if td_tags is not None:
+        a_tags = td_tags[1].find_all('a')    #td_tags[0] bevat het label 'seizoenen'
+        for a_tag in a_tags:
+            seizoen = int(a_tag.string)
+            seizoenen.append(seizoen)
+    else:
+        seizoen = _verwerk_nevenpersonage_details_uitzonderingen(voornaam, achternaam)
     return{'voornaam':voornaam, 'achternaam': achternaam, 'seizoenen':seizoenen}
 
+def _verwerk_nevenpersonage_details_uitzonderingen(voornaam:str, achternaam:str) -> list[int]:
+    if voornaam == 'Nand' and achternaam=='Reimers':
+        return [10, 11, 12, 13]
+    logger.error(f"Geen seizoensdata voor {voornaam} {achternaam}")
+    raise Exception(f"Geen seizoensdata voor {voornaam} {achternaam}")
+
 def _verwerk_nevenpersonage_urls_uitzonderingen(urls:list[str], url:str) -> list[str]:
-    if url == 'Pips': return urls  #Pips heeft geen detailspagina
+    if url == '/nl/wiki/Pips': 
+        logger.debug(f"Uitzondering voor url Pips")
+        return urls  #Pips heeft geen detailspagina
     urls.append(url)
     return urls
 
