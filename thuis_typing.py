@@ -15,3 +15,8 @@ class RelatiePersoonData(TypedDict):
     seizoen: int
     persoon_1: str
     persoon_2: str
+
+class PersonageData(TypedDict):
+    voornaam: str
+    achternaam: str
+    seizoenen: list[int]

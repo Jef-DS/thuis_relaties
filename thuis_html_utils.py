@@ -3,11 +3,36 @@ import logging
 from bs4 import BeautifulSoup, Tag
 from csv import DictWriter
 
-from thuis_typing import RelatiePersoonData
+from thuis_typing import RelatiePersoonData, PersonageData
 
 RELATIE_HEADERS = list(RelatiePersoonData.__annotations__.keys())
 
 logger = logging.getLogger(__name__)
+
+def lees_hoofdpersonage_urls(html:str) -> list[str]:
+    """Geeft de urls terug van de detailpagina's van de hoofdpersonages
+    
+    Parameters
+    ----------
+    html: str
+          de tekst van de HTML-pagina met de urls
+    
+    Returns
+    -------
+    list[str]:
+          de lijst met de urls van de detailpagina's
+    """
+    data = []
+    soep = BeautifulSoup(html, 'lxml')
+    #Er zijn twee reeksen van personages, namelijk id='gallery-0' en id='gallery-1'
+    hoofdpersonage_tags = soep.find_all(id=re.compile(r'^gallery-[01]$'))
+    for hoofdpersonage_tag in hoofdpersonage_tags:
+        personage_tags = hoofdpersonage_tag.find_all(class_='wikia-gallery-item')
+        for personage_tag in personage_tags:
+            a_tag = personage_tag.find('a')
+            url = a_tag['href']
+            data.append(url)
+    return data   
 
 def extract_relaties(bestandsnaam: str, html:str) -> None:
     relaties = _lees_relaties(html)
@@ -56,7 +81,8 @@ def _lees_seizoen_relatie(tag:Tag, seizoen_nr:int ) -> list[RelatiePersoonData]:
 if __name__ == '__main__':
     from thuis_http_utils import get_url
     logging.basicConfig(level=logging.DEBUG)
-    url = "https://nergensbeterdanthuis.fandom.com/nl/wiki/Relaties"
+    url = "https://nergensbeterdanthuis.fandom.com/nl/wiki/Hoofdpersonages"
     content = get_url(url)
-    bestandsnaam = "relaties_namen.csv"
-    extract_relaties(bestandsnaam, content)
+    urls = lees_hoofdpersonage_urls(content)
+    print(urls)
+    
