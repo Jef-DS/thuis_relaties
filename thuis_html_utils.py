@@ -12,21 +12,24 @@ HOOFDPERSONAGE_CSV = 'hoofdpersonages.csv'
 logger = logging.getLogger(__name__)
 
 def extract_hoofdpersonages() -> None:
+    """Leest hoofdpersonagedata en bewaart ze in hoofdpersonage.csv
+    
+    """
     BASIS_URL = 'https://nergensbeterdanthuis.fandom.com'
     url = "https://nergensbeterdanthuis.fandom.com/nl/wiki/Hoofdpersonages"
     content = get_url(url)
-    urls = lees_hoofdpersonage_urls(content)
+    urls = _lees_hoofdpersonage_urls(content)
     personage_data = []
     for url in urls:
         content = get_url(BASIS_URL+url)
-        hoofdpersonage_data = lees_hoofdpersonage_details(content)
+        hoofdpersonage_data = _lees_hoofdpersonage_details(content)
         personage_data.append(hoofdpersonage_data)
     with open(HOOFDPERSONAGE_CSV, mode='w', newline='', encoding='utf-8') as f:
         writer = DictWriter(f, delimiter=';', fieldnames=PERSONAGE_HEADERS)
         writer.writeheader()
         writer.writerows(personage_data)
 
-def lees_hoofdpersonage_details(html:str) -> PersonageData:
+def _lees_hoofdpersonage_details(html:str) -> PersonageData:
     soep = BeautifulSoup(html)
     titel_tag = soep.find('span', class_='mw-page-title-main')
     naam = str(titel_tag.string)   #.string kan ook None teruggeeven
@@ -42,7 +45,7 @@ def lees_hoofdpersonage_details(html:str) -> PersonageData:
         seizoenen.append(seizoen)
     return{'voornaam':voornaam, 'achternaam': achternaam, 'seizoenen':seizoenen}
 
-def lees_hoofdpersonage_urls(html:str) -> list[str]:
+def _lees_hoofdpersonage_urls(html:str) -> list[str]:
     """Geeft de urls terug van de detailpagina's van de hoofdpersonages
     
     Parameters
