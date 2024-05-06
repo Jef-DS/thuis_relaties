@@ -11,8 +11,46 @@ PERSONAGE_HEADERS = list(PersonageData.__annotations__.keys())
 HOOFDPERSONAGE_CSV = 'hoofdpersonages.csv'
 NEVENPERSONAGE_CSV = 'nevenpersonages.csv'
 RELATIES_NAMEN_CSV = 'relaties_namen.csv'
+GASTPERSONAGE_CSV  = 'gastpersonages.csv'
 
 logger = logging.getLogger(__name__)
+
+def extract_gastpersonages() -> None:
+    personages = [
+        {'voornaam': 'Adam', 'achternaam': 'Kiabaté', 'seizoenen': [22]},
+        {'voornaam': 'Alex', 'achternaam': 'Walters', 'seizoenen': [8,9]},         #onbekend personage
+        {'voornaam': 'Amber', 'achternaam': ' Van Gistel', 'seizoenen': [12,13]},
+        {'voornaam': 'André', 'achternaam': 'Versteven', 'seizoenen': [16,17,18,19,20,21]},
+        {'voornaam': 'Axel', 'achternaam': 'Verstraeten', 'seizoenen': [17]},
+        {'voornaam': 'Bert', 'achternaam': 'Onbekend', 'seizoenen': [7]},
+        {'voornaam': 'Bonnie', 'achternaam': 'Declerck', 'seizoenen': [11,12]},
+        {'voornaam': 'Chiara', 'achternaam': 'Giampicollo', 'seizoenen': [22]},
+        {'voornaam': 'Dirk', 'achternaam': 'Onbekend', 'seizoenen': [1]},
+        {'voornaam': 'Eline', 'achternaam': 'Eelen', 'seizoenen': [16]},
+        {'voornaam': 'Elke', 'achternaam': 'Vervust', 'seizoenen': [1]},
+        {'voornaam': 'Filip', 'achternaam': 'Lamote', 'seizoenen': [15],},
+        {'voornaam': 'Floris', 'achternaam': 'Onbekend', 'seizoenen': [23,24,25]},
+        {'voornaam': 'François', 'achternaam': 'Chevalier', 'seizoenen': [2,3]},
+        {'voornaam': 'Gaby', 'achternaam': 'Fontaine', 'seizoenen': [28]},
+        {'voornaam': 'Hanne', 'achternaam': 'Goris', 'seizoenen': [15]},
+        {'voornaam': 'Jean-Marie', 'achternaam': 'Onbekend', 'seizoenen': [15]},
+        {'voornaam': 'Jef', 'achternaam': 'Van Hout', 'seizoenen': [26,27]},
+        {'voornaam': 'John', 'achternaam': 'De Brabander', 'seizoenen': [1]},
+        {'voornaam': 'Leon', 'achternaam': 'Raemaeckers', 'seizoenen': [1]},
+        {'voornaam': 'Margot', 'achternaam': 'Onbekend', 'seizoenen': [12]},   #Onbekedn personage
+        {'voornaam': 'Martha', 'achternaam': 'Onbekend', 'seizoenen': [17]},
+        {'voornaam': 'Max', 'achternaam': 'Maertens', 'seizoenen': [16,17]},
+        {'voornaam': 'Nona', 'achternaam': 'Sareno', 'seizoenen': [12,13,14]},
+        {'voornaam': 'Renée', 'achternaam': 'Coppens', 'seizoenen': [21,22,23]},
+        {'voornaam': 'Sindi', 'achternaam': 'Onbekend', 'seizoenen': [12]},
+        {'voornaam': 'Thomas', 'achternaam': 'Onbekend', 'seizoenen': [19]},   #Onbekend personage
+        {'voornaam': 'Wim', 'achternaam': 'Daniels', 'seizoenen': [11,12]},
+        {'voornaam': 'Zosiane', 'achternaam': 'Pelckmans', 'seizoenen': [10]}
+    ]
+    with open(GASTPERSONAGE_CSV, mode='w', newline='', encoding='utf-8') as f:
+        writer = DictWriter(f, delimiter=";",fieldnames=PERSONAGE_HEADERS)
+        writer.writeheader()
+        writer.writerows(personages)
 
 def extract_nevenpersonages() -> None:
     """Leest nevenpersonagedata en bewaart ze in nevenpersonages.csv
@@ -64,9 +102,6 @@ def _lees_personage_details(html:str) -> PersonageData:
     soep = BeautifulSoup(html, 'lxml')
     titel_tag = soep.find('span', class_='mw-page-title-main')
     naam = str(titel_tag.string)   #.string kan ook None teruggeeven
-    naam_details = naam.split(' ', maxsplit=1)
-    voornaam = naam_details[0]
-    achternaam = naam_details[1] if len(naam_details) == 2 else 'Onbekend'   #Er zijn personages zonder achternaam
     seizoenen = []
     detail_data = soep.find('table', class_='userbox')
     if detail_data is not None:
@@ -75,17 +110,27 @@ def _lees_personage_details(html:str) -> PersonageData:
         for a_tag in a_tags:
             seizoen = int(a_tag.string)
             seizoenen.append(seizoen)
-    else:
-        seizoen = _verwerk_nevenpersonage_details_uitzonderingen(voornaam, achternaam)
-    return{'voornaam':voornaam, 'achternaam': achternaam, 'seizoenen':seizoenen}
+    personage_details = _verwerk_personage_details_uitzonderingen(naam, seizoenen)
+    return personage_details
 
-def _verwerk_nevenpersonage_details_uitzonderingen(voornaam:str, achternaam:str) -> list[int]:
-    if voornaam == 'Nand' and achternaam=='Reimers':
-        return [10, 11, 12, 13]
-    if voornaam == 'Stijn' and achternaam=='De Belder':
-        return [16, 17]
-    logger.error(f"Geen seizoensdata voor {voornaam} {achternaam}")
-    raise Exception(f"Geen seizoensdata voor {voornaam} {achternaam}")
+def _verwerk_personage_details_uitzonderingen(naam:str, seizoenen:list[int]) -> PersonageData:
+    naam_details = naam.split(' ', maxsplit=1)
+    voornaam = naam_details[0]
+    achternaam = naam_details[1] if len(naam_details) == 2 else 'Onbekend'   #Er zijn personages zonder achternaam
+    if voornaam =='Nand' and achternaam == 'Reimers':
+        seizoenen = [10, 11, 12, 13]
+    if voornaam == 'Stijn' and achternaam == 'De Belder':
+        seizoenen = [16, 17]
+    if voornaam == 'Tim' and achternaam == 'Cremers':  #relatie met Katrien begint in seizoen 13
+        seizoenen.insert(0, 13)
+    if voornaam == 'Claire' and achternaam == 'Bastiaens':
+        seizoenen.append(15)
+    if voornaam == 'Britney' : voornaam = 'Britt'
+    if voornaam == 'Angele': voornaam = 'Angèle'
+    if voornaam == 'Rogerke': voornaam = 'Roger'
+    if voornaam == 'Kazàn' : voornaam = 'Kasper'
+    return {'voornaam':voornaam, 'achternaam':achternaam, 'seizoenen':seizoenen}
+    
 
 def _verwerk_nevenpersonage_urls_uitzonderingen(urls:list[str], url:str) -> list[str]:
     if url == '/nl/wiki/Pips': 
@@ -170,14 +215,24 @@ def _lees_seizoen_relatie(tag:Tag, seizoen_nr:int ) -> list[RelatiePersoonData]:
     for b_tag in b_tags:
         tekst = str(b_tag.string)
         persoon_1, persoon_2 = tekst.split(" en ")
-        item = {'seizoen': seizoen_nr, 'persoon_1': persoon_1, 'persoon_2': persoon_2}
+        item = _verwerk_lees_seizoen_relatie_uitzondering(seizoen_nr, persoon_1, persoon_2)
         data.append(item)
     logger.debug(f"{len(data)} relaties ingelezen voor seizoen {seizoen_nr}")
     return data
 
+def _verwerk_lees_seizoen_relatie_uitzondering(seizoen_nr:int, persoon_1:str, persoon_2:str) -> RelatiePersoonData:
+    if persoon_1 == 'Angele': persoon_1 = 'Angèle'
+    if persoon_2 == 'Angele': persoon_2 = 'Angèle'
+    if persoon_1 == 'Aisha' : persoon_1 = 'Aïsha'
+    if persoon_2 == 'Aisha' : persoon_2 = 'Aïsha'
+    if persoon_1 == 'Franky' : persoon_1 = 'Kaat'   #Geen dead naming
+    if persoon_2 == 'Franky' : persoon_2 = 'Kaat'
+
+    return {'seizoen': seizoen_nr, 'persoon_1': persoon_1, 'persoon_2': persoon_2}
+
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
-    extract_relaties()
+    extract_gastpersonages()
 
 
     
