@@ -46,6 +46,7 @@ def extract_hoofdpersonages() -> None:
         writer.writeheader()
         writer.writerows(personage_data)
 
+
 def _lees_personage_details(html:str) -> PersonageData:
     soep = BeautifulSoup(html, 'lxml')
     titel_tag = soep.find('span', class_='mw-page-title-main')
@@ -62,6 +63,11 @@ def _lees_personage_details(html:str) -> PersonageData:
         seizoenen.append(seizoen)
     return{'voornaam':voornaam, 'achternaam': achternaam, 'seizoenen':seizoenen}
 
+def _verwerk_nevenpersonage_urls_uitzonderingen(urls:list[str], url:str) -> list[str]:
+    if url == 'Pips': return urls  #Pips heeft geen detailspagina
+    urls.append(url)
+    return urls
+
 def _lees_nevenpersonage_urls(html:str) -> list[str]:
     data = []
     soep = BeautifulSoup(html, 'lxml')
@@ -70,14 +76,14 @@ def _lees_nevenpersonage_urls(html:str) -> list[str]:
     for personage_tag in personage_tags:
         a_tag = personage_tag.find('a')
         url = a_tag['href']
-        data.append(url)
+        data = _verwerk_nevenpersonage_urls_uitzonderingen(data, url)
     vorige_nevenpersonages_tag = soep.find('table', class_='sortable')  #class=jquery-tablesorter zit niet in source
     tr_tags = vorige_nevenpersonages_tag.find_all('tr')
     for tr_tag in tr_tags[1:]:              #header overslaan
         td_tags = tr_tag.find_all('td')
         a_tag = td_tags[2].find('a')
         url = a_tag['href']
-        data.append(url)
+        data = _verwerk_nevenpersonage_urls_uitzonderingen(data, url)
     return data    
 
 def _lees_hoofdpersonage_urls(html:str) -> list[str]:
