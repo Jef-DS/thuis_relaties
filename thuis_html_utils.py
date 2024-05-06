@@ -25,8 +25,10 @@ def extract_nevenpersonages() -> None:
         content = get_url(BASIS_URL+url)
         nevenpersonage_data = _lees_personage_details(content)
         personage_data.append(nevenpersonage_data)
-    print(personage_data)
-    
+    with open(NEVENPERSONAGE_CSV, mode='w', newline='', encoding='utf-8') as f:
+        writer = DictWriter(f, delimiter=';', fieldnames=PERSONAGE_HEADERS)
+        writer.writeheader()
+        writer.writerows(personage_data)    
 
 def extract_hoofdpersonages() -> None:
     """Leest hoofdpersonagedata en bewaart ze in hoofdpersonages.csv
