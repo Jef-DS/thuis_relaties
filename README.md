@@ -10,6 +10,9 @@ om een *cache* te voorzien. De functies hiervoor staan in het bestand thuis_http
 
 ## Versies
 
+### Versie 0.7
+Bewaard de personagegegevens van de CSV-bestanden in een sqlite databank
+
 ### Versie 0.6
 De data van de personages op de website zijn niet volledig. Soms verschillen de namen tussen een relatie en een personage (Angele ipv Angèle). Soms ontbreken er seizoenen. En soms verandert een personage (geen dead naming voor "Kaat")
 - Ontbrekende gegevens van bestaande personages toegevoegd
