@@ -10,6 +10,9 @@ om een *cache* te voorzien. De functies hiervoor staan in het bestand thuis_http
 
 ## Versies
 
+### Versie 0.5
+Informatie van hoofd- en nevenpersonages lezen en bewaren in CSV-bestanden
+
 ### Versie 0.4
 Een alternatief om de HTML-bestanden te lezen met lxml (en niet met BeautifulSoup) toegevoegd in thuis_html_lxml_utils.py. Het bestand bevat dezelfde functies als thuis_html_utils.py. 
 
