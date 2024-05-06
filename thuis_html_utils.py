@@ -69,6 +69,8 @@ def _lees_personage_details(html:str) -> PersonageData:
 def _verwerk_nevenpersonage_details_uitzonderingen(voornaam:str, achternaam:str) -> list[int]:
     if voornaam == 'Nand' and achternaam=='Reimers':
         return [10, 11, 12, 13]
+    if voornaam == 'Stijn' and achternaam=='De Belder':
+        return [16, 17]
     logger.error(f"Geen seizoensdata voor {voornaam} {achternaam}")
     raise Exception(f"Geen seizoensdata voor {voornaam} {achternaam}")
 
