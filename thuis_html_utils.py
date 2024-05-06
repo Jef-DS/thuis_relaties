@@ -11,8 +11,18 @@ HOOFDPERSONAGE_CSV = 'hoofdpersonages.csv'
 
 logger = logging.getLogger(__name__)
 
+def extract_nevenpersonages() -> None:
+    """Leest nevenpersonagedata en bewaart ze in nevenpersonages.csv
+    
+    """
+    BASIS_URL = 'https://nergensbeterdanthuis.fandom.com'
+    url = "https://nergensbeterdanthuis.fandom.com/nl/wiki/Nevenpersonages"
+    content = get_url(url)
+    urls = _lees_nevenpersonage_urls(content)
+    print(urls)
+
 def extract_hoofdpersonages() -> None:
-    """Leest hoofdpersonagedata en bewaart ze in hoofdpersonage.csv
+    """Leest hoofdpersonagedata en bewaart ze in hoofdpersonages.csv
     
     """
     BASIS_URL = 'https://nergensbeterdanthuis.fandom.com'
@@ -30,7 +40,7 @@ def extract_hoofdpersonages() -> None:
         writer.writerows(personage_data)
 
 def _lees_hoofdpersonage_details(html:str) -> PersonageData:
-    soep = BeautifulSoup(html)
+    soep = BeautifulSoup(html, 'lxml')
     titel_tag = soep.find('span', class_='mw-page-title-main')
     naam = str(titel_tag.string)   #.string kan ook None teruggeeven
     naam_details = naam.split(' ', maxsplit=1)
@@ -44,6 +54,24 @@ def _lees_hoofdpersonage_details(html:str) -> PersonageData:
         seizoen = int(a_tag.string)
         seizoenen.append(seizoen)
     return{'voornaam':voornaam, 'achternaam': achternaam, 'seizoenen':seizoenen}
+
+def _lees_nevenpersonage_urls(html:str) -> list[str]:
+    data = []
+    soep = BeautifulSoup(html, 'lxml')
+    huidige_nevenpersonages_tag = soep.find(id='gallery-0')
+    personage_tags = huidige_nevenpersonages_tag.find_all(class_='wikia-gallery-item')    
+    for personage_tag in personage_tags:
+        a_tag = personage_tag.find('a')
+        url = a_tag['href']
+        data.append(url)
+    vorige_nevenpersonages_tag = soep.find('table', class_='sortable')  #class=jquery-tablesorter zit niet in source
+    tr_tags = vorige_nevenpersonages_tag.find_all('tr')
+    for tr_tag in tr_tags[1:]:              #header overslaan
+        td_tags = tr_tag.find_all('td')
+        a_tag = td_tags[2].find('a')
+        url = a_tag['href']
+        data.append(url)
+    return data    
 
 def _lees_hoofdpersonage_urls(html:str) -> list[str]:
     """Geeft de urls terug van de detailpagina's van de hoofdpersonages
@@ -119,7 +147,7 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     url = "https://nergensbeterdanthuis.fandom.com/nl/wiki/Hoofdpersonages"
     BASIS_URL = 'https://nergensbeterdanthuis.fandom.com'
-    extract_hoofdpersonages()
+    extract_nevenpersonages()
 
 
     
