@@ -32,14 +32,14 @@ def extract_hoofdpersonages() -> None:
     personage_data = []
     for url in urls:
         content = get_url(BASIS_URL+url)
-        hoofdpersonage_data = _lees_hoofdpersonage_details(content)
+        hoofdpersonage_data = _lees_personage_details(content)
         personage_data.append(hoofdpersonage_data)
     with open(HOOFDPERSONAGE_CSV, mode='w', newline='', encoding='utf-8') as f:
         writer = DictWriter(f, delimiter=';', fieldnames=PERSONAGE_HEADERS)
         writer.writeheader()
         writer.writerows(personage_data)
 
-def _lees_hoofdpersonage_details(html:str) -> PersonageData:
+def _lees_personage_details(html:str) -> PersonageData:
     soep = BeautifulSoup(html, 'lxml')
     titel_tag = soep.find('span', class_='mw-page-title-main')
     naam = str(titel_tag.string)   #.string kan ook None teruggeeven
