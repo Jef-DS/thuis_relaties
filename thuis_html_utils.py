@@ -2,6 +2,7 @@ import re
 import logging
 from bs4 import BeautifulSoup, Tag
 from csv import DictWriter
+from thuis_http_utils import get_url
 
 from thuis_typing import RelatiePersoonData, PersonageData
 
@@ -9,6 +10,7 @@ RELATIE_HEADERS = list(RelatiePersoonData.__annotations__.keys())
 PERSONAGE_HEADERS = list(PersonageData.__annotations__.keys())
 HOOFDPERSONAGE_CSV = 'hoofdpersonages.csv'
 NEVENPERSONAGE_CSV = 'nevenpersonages.csv'
+RELATIES_NAMEN_CSV = 'relaties_namen.csv'
 
 logger = logging.getLogger(__name__)
 
@@ -48,6 +50,15 @@ def extract_hoofdpersonages() -> None:
         writer.writeheader()
         writer.writerows(personage_data)
 
+def extract_relaties() -> None:
+    BASIS_URL = 'https://nergensbeterdanthuis.fandom.com'
+    url = "https://nergensbeterdanthuis.fandom.com/nl/wiki/Relaties"
+    content = get_url(url)
+    relaties = _lees_relaties(content)
+    with open(RELATIES_NAMEN_CSV, mode='w', newline='', encoding='utf-8') as f:
+        writer = DictWriter(f, delimiter=';', fieldnames=RELATIE_HEADERS)
+        writer.writeheader()
+        writer.writerows(relaties)
 
 def _lees_personage_details(html:str) -> PersonageData:
     soep = BeautifulSoup(html, 'lxml')
@@ -126,12 +137,6 @@ def _lees_hoofdpersonage_urls(html:str) -> list[str]:
             data.append(url)
     return data   
 
-def extract_relaties(bestandsnaam: str, html:str) -> None:
-    relaties = _lees_relaties(html)
-    with open(bestandsnaam, mode='w', newline='', encoding='utf-8') as f:
-        writer = DictWriter(f, delimiter=';', fieldnames=RELATIE_HEADERS)
-        writer.writeheader()
-        writer.writerows(relaties)
 
 def _lees_relaties(html:str) -> list[RelatiePersoonData]:
     """Leest de relaties van de HTML-tekst van de Relaties-pagina van de Thuis website
@@ -171,11 +176,8 @@ def _lees_seizoen_relatie(tag:Tag, seizoen_nr:int ) -> list[RelatiePersoonData]:
     return data
 
 if __name__ == '__main__':
-    from thuis_http_utils import get_url
     logging.basicConfig(level=logging.DEBUG)
-    url = "https://nergensbeterdanthuis.fandom.com/nl/wiki/Hoofdpersonages"
-    BASIS_URL = 'https://nergensbeterdanthuis.fandom.com'
-    extract_nevenpersonages()
+    extract_relaties()
 
 
     
