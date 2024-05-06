@@ -35,6 +35,7 @@ def extract_gastpersonages() -> None:
         {'voornaam': 'Hanne', 'achternaam': 'Goris', 'seizoenen': [15]},
         {'voornaam': 'Jean-Marie', 'achternaam': 'Onbekend', 'seizoenen': [15]},
         {'voornaam': 'Jef', 'achternaam': 'Van Hout', 'seizoenen': [26,27]},
+        {'voornaam': 'Jessica', 'achternaam': 'Onbekend', 'seizoenen': [1]},
         {'voornaam': 'John', 'achternaam': 'De Brabander', 'seizoenen': [1]},
         {'voornaam': 'Leon', 'achternaam': 'Raemaeckers', 'seizoenen': [1]},
         {'voornaam': 'Margot', 'achternaam': 'Onbekend', 'seizoenen': [12]},   #Onbekedn personage
