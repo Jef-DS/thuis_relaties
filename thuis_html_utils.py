@@ -56,8 +56,8 @@ def _lees_personage_details(html:str) -> PersonageData:
     achternaam = naam_details[1] if len(naam_details) == 2 else 'Onbekend'   #Er zijn personages zonder achternaam
     seizoenen = []
     detail_data = soep.find('table', class_='userbox')
-    td_tags = detail_data.find_all('td')
-    if td_tags is not None:
+    if detail_data is not None:
+        td_tags = detail_data.find_all('td')
         a_tags = td_tags[1].find_all('a')    #td_tags[0] bevat het label 'seizoenen'
         for a_tag in a_tags:
             seizoen = int(a_tag.string)
