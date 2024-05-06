@@ -8,6 +8,7 @@ from thuis_typing import RelatiePersoonData, PersonageData
 RELATIE_HEADERS = list(RelatiePersoonData.__annotations__.keys())
 PERSONAGE_HEADERS = list(PersonageData.__annotations__.keys())
 HOOFDPERSONAGE_CSV = 'hoofdpersonages.csv'
+NEVENPERSONAGE_CSV = 'nevenpersonages.csv'
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +20,13 @@ def extract_nevenpersonages() -> None:
     url = "https://nergensbeterdanthuis.fandom.com/nl/wiki/Nevenpersonages"
     content = get_url(url)
     urls = _lees_nevenpersonage_urls(content)
-    print(urls)
+    personage_data = []
+    for url in urls:
+        content = get_url(BASIS_URL+url)
+        nevenpersonage_data = _lees_personage_details(content)
+        personage_data.append(nevenpersonage_data)
+    print(personage_data)
+    
 
 def extract_hoofdpersonages() -> None:
     """Leest hoofdpersonagedata en bewaart ze in hoofdpersonages.csv
