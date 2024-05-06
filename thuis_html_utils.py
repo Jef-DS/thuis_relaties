@@ -6,8 +6,41 @@ from csv import DictWriter
 from thuis_typing import RelatiePersoonData, PersonageData
 
 RELATIE_HEADERS = list(RelatiePersoonData.__annotations__.keys())
+PERSONAGE_HEADERS = list(PersonageData.__annotations__.keys())
+HOOFDPERSONAGE_CSV = 'hoofdpersonages.csv'
 
 logger = logging.getLogger(__name__)
+
+def extract_hoofdpersonages() -> None:
+    BASIS_URL = 'https://nergensbeterdanthuis.fandom.com'
+    url = "https://nergensbeterdanthuis.fandom.com/nl/wiki/Hoofdpersonages"
+    content = get_url(url)
+    urls = lees_hoofdpersonage_urls(content)
+    personage_data = []
+    for url in urls:
+        content = get_url(BASIS_URL+url)
+        hoofdpersonage_data = lees_hoofdpersonage_details(content)
+        personage_data.append(hoofdpersonage_data)
+    with open(HOOFDPERSONAGE_CSV, mode='w', newline='', encoding='utf-8') as f:
+        writer = DictWriter(f, delimiter=';', fieldnames=PERSONAGE_HEADERS)
+        writer.writeheader()
+        writer.writerows(personage_data)
+
+def lees_hoofdpersonage_details(html:str) -> PersonageData:
+    soep = BeautifulSoup(html)
+    titel_tag = soep.find('span', class_='mw-page-title-main')
+    naam = str(titel_tag.string)   #.string kan ook None teruggeeven
+    naam_details = naam.split(' ', maxsplit=1)
+    voornaam = naam_details[0]
+    achternaam = naam_details[1] if len(naam_details) == 2 else 'Onbekend'   #Er zijn personages zonder achternaam
+    seizoenen = []
+    detail_data = soep.find('table', class_='userbox')
+    td_tags = detail_data.find_all('td')
+    a_tags = td_tags[1].find_all('a')    #td_tags[0] bevat het label 'seizoenen'
+    for a_tag in a_tags:
+        seizoen = int(a_tag.string)
+        seizoenen.append(seizoen)
+    return{'voornaam':voornaam, 'achternaam': achternaam, 'seizoenen':seizoenen}
 
 def lees_hoofdpersonage_urls(html:str) -> list[str]:
     """Geeft de urls terug van de detailpagina's van de hoofdpersonages
@@ -82,7 +115,8 @@ if __name__ == '__main__':
     from thuis_http_utils import get_url
     logging.basicConfig(level=logging.DEBUG)
     url = "https://nergensbeterdanthuis.fandom.com/nl/wiki/Hoofdpersonages"
-    content = get_url(url)
-    urls = lees_hoofdpersonage_urls(content)
-    print(urls)
+    BASIS_URL = 'https://nergensbeterdanthuis.fandom.com'
+    extract_hoofdpersonages()
+
+
     
