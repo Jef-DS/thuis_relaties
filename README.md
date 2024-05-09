@@ -10,6 +10,11 @@ om een *cache* te voorzien. De functies hiervoor staan in het bestand thuis_http
 
 ## Versies
 
+### versie 1.0
+Berekent lijst van personages gesorteerd op het aantal relaties.
+
+In vergelijking met de vorige versie is er nog een *download*-parameter toegevoegd aan de extract_*-functies van thuis_html_utils.py
+
 ### Versie 0.8
 In thuis.ipynb code toevoegen om 
 - de personagelijst te lezen in de databank 

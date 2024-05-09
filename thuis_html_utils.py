@@ -13,9 +13,17 @@ NEVENPERSONAGE_CSV = 'nevenpersonages.csv'
 RELATIES_NAMEN_CSV = 'relaties_namen.csv'
 GASTPERSONAGE_CSV  = 'gastpersonages.csv'
 
+BASIS_URL = 'https://nergensbeterdanthuis.fandom.com'
+RELATIE_URL = BASIS_URL + "/nl/wiki/Relaties"
+HOOFDPERSONAGES_URL = BASIS_URL + "/nl/wiki/Hoofdpersonages"
+NEVENERSONAGES_URL = BASIS_URL + "/nl/wiki/Nevenpersonages"
+
 logger = logging.getLogger(__name__)
 
 def extract_gastpersonages() -> None:
+    """Bewaart gastpersonages in gastpersonages.csv
+    
+    """
     personages = [
         {'voornaam': 'Adam', 'achternaam': 'Kiabaté', 'seizoenen': [22]},
         {'voornaam': 'Alex', 'achternaam': 'Walters', 'seizoenen': [8,9]},         #onbekend personage
@@ -53,17 +61,25 @@ def extract_gastpersonages() -> None:
         writer.writeheader()
         writer.writerows(personages)
 
-def extract_nevenpersonages() -> None:
+def extract_nevenpersonages(download=False) -> None:
     """Leest nevenpersonagedata en bewaart ze in nevenpersonages.csv
+
+    Parameters
+    ----------
+    download: bool, optional
+              Moet er contact worden opgenomen met de website om te controleren of het bestand gewijzigd is
+    
+    Raises
+    ------
+    IndexError
+         Wanneer er en fout zit in de cache of een bestand niet wordt teruggevonden in de cache
     
     """
-    BASIS_URL = 'https://nergensbeterdanthuis.fandom.com'
-    url = "https://nergensbeterdanthuis.fandom.com/nl/wiki/Nevenpersonages"
-    content = get_url(url)
+    content = get_url(NEVENERSONAGES_URL, download)
     urls = _lees_nevenpersonage_urls(content)
     personage_data = []
     for url in urls:
-        content = get_url(BASIS_URL+url)
+        content = get_url(BASIS_URL+url, download)
         nevenpersonage_data = _lees_personage_details(content)
         personage_data.append(nevenpersonage_data)
     with open(NEVENPERSONAGE_CSV, mode='w', newline='', encoding='utf-8') as f:
@@ -71,17 +87,25 @@ def extract_nevenpersonages() -> None:
         writer.writeheader()
         writer.writerows(personage_data)    
 
-def extract_hoofdpersonages() -> None:
+def extract_hoofdpersonages(download=False) -> None:
     """Leest hoofdpersonagedata en bewaart ze in hoofdpersonages.csv
+
+    Parameters
+    ----------
+    download: bool, optional
+              Moet er contact worden opgenomen met de website om te controleren of het bestand gewijzigd is
+    
+    Raises
+    ------
+    IndexError
+         Wanneer er en fout zit in de cache of een bestand niet wordt teruggevonden in de cache
     
     """
-    BASIS_URL = 'https://nergensbeterdanthuis.fandom.com'
-    url = "https://nergensbeterdanthuis.fandom.com/nl/wiki/Hoofdpersonages"
-    content = get_url(url)
+    content = get_url(HOOFDPERSONAGES_URL, download)
     urls = _lees_hoofdpersonage_urls(content)
     personage_data = []
     for url in urls:
-        content = get_url(BASIS_URL+url)
+        content = get_url(BASIS_URL+url, download)
         hoofdpersonage_data = _lees_personage_details(content)
         personage_data.append(hoofdpersonage_data)
     with open(HOOFDPERSONAGE_CSV, mode='w', newline='', encoding='utf-8') as f:
@@ -89,10 +113,21 @@ def extract_hoofdpersonages() -> None:
         writer.writeheader()
         writer.writerows(personage_data)
 
-def extract_relaties() -> None:
-    BASIS_URL = 'https://nergensbeterdanthuis.fandom.com'
-    url = "https://nergensbeterdanthuis.fandom.com/nl/wiki/Relaties"
-    content = get_url(url)
+def extract_relaties(download=False) -> None:
+    """Leest relaties en bewaart ze in relaties_namen.csv
+
+    Parameters
+    ----------
+    download: bool, optional
+              Moet er contact worden opgenomen met de website om te controleren of het bestand gewijzigd is
+    
+    Raises
+    ------
+    IndexError
+         Wanneer er en fout zit in de cache of een bestand niet wordt teruggevonden in de cache
+    
+    """
+    content = get_url(RELATIE_URL, download)
     relaties = _lees_relaties(content)
     with open(RELATIES_NAMEN_CSV, mode='w', newline='', encoding='utf-8') as f:
         writer = DictWriter(f, delimiter=';', fieldnames=RELATIE_HEADERS)
