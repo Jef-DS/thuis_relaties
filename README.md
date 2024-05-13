@@ -10,7 +10,10 @@ om een *cache* te voorzien. De functies hiervoor staan in het bestand thuis_http
 
 ## Versies
 
-### versie 1.0
+### Versie 1.1
+Berkening van de lijst van de personages met de meeste relaties via de _adjacency_-matrix
+
+### Versie 1.0
 Berekent lijst van personages gesorteerd op het aantal relaties.
 
 In vergelijking met de vorige versie is er nog een *download*-parameter toegevoegd aan de extract_*-functies van thuis_html_utils.py
