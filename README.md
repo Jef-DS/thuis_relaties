@@ -10,8 +10,11 @@ om een *cache* te voorzien. De functies hiervoor staan in het bestand thuis_http
 
 ## Versies
 
+## Versie 1.4
+Wie heeft de langste relaties in Thuis.
+
 ### Versie 1.3
-Wanneer we de _adjacency_-matrix driemaal vermenigvuldigen kunnen we zien of er driehoeksrelaties zijn in THuis: p1 <-> p2 <-> p3 <-> p1. Het blijkt dat die er niet zijn.
+Wanneer we de _adjacency_-matrix driemaal vermenigvuldigen kunnen we zien of er driehoeksrelaties zijn in Thuis: p1 <-> p2 <-> p3 <-> p1. Het blijkt dat die er niet zijn.
 
 ### Versie 1.2
 Berekening van de lijst van de personages met de meeste relaties door de _adjacency_-matrix met zichzelf te vermenigvuldigen
