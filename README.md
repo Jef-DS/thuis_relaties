@@ -2,7 +2,9 @@
 
 ## Inleiding
 Deze applicatie analyseert de relaties in de één-serie Thuis. Hierbij wordt gebruik gemaakt van 
-[de fandom website van thuis](https://nergensbeterdanthuis.fandom.com/nl/wiki/Thuis_wiki)
+[de fandom website van thuis](https://nergensbeterdanthuis.fandom.com/nl/wiki/Thuis_wiki). 
+Deze code hoort de artikelreeks [Matrices en relaties in Thuis](https://www.linkedin.com/pulse/matrices-en-relaties-thuis1-dbicts-bvba-qckce) 
+die gepubliceerd is op LinkedIn. 
 
 ## Caching
 Om ervoor te zorgen dat de website van de fans van thuis niet teveel belast wordt, is het een goed idee
